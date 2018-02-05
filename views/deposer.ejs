@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+</head>
+<body>
+    <form action="/deposer" method="POST">
+        <label for="">Titre de l'annonce</label>
+        <input type="text" name="title">
+        <label for="">Texte de l'annonce</label>
+        <input type="text" name="description">
+        <label for="">Prix</label>
+        <input type="text" name="price">
+        <label for="">Photo</label>
+        <input type="file" name="photo" enctype="multipart/form-data">
+        <label for="">Ville ou code postal</label>
+        <input type="text" name="city">
+        <label for="">Pseudo</label>
+        <input type="text" name="username">
+        <label for="">Email</label>
+        <input type="email" name="email">
+        <label for="">Téléphone</label>
+        <input type="text" name="phone_number">
+        <button type="submit">Valider</button>
+    </form> 
+</body>
+</html>
