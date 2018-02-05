@@ -9,7 +9,7 @@
     <script src="main.js"></script>
 </head>
 <body>
-    <form action="/deposer" method="POST">
+    <form action="/deposer" method="POST" enctype="multipart/form-data">
         <label for="">Titre de l'annonce</label>
         <input type="text" name="title">
         <label for="">Texte de l'annonce</label>
@@ -17,7 +17,7 @@
         <label for="">Prix</label>
         <input type="text" name="price">
         <label for="">Photo</label>
-        <input type="file" name="photo" enctype="multipart/form-data">
+        <input type="file" name="photo">
         <label for="">Ville ou code postal</label>
         <input type="text" name="city">
         <label for="">Pseudo</label>
