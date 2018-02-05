@@ -1,32 +1,61 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script>
-</head>
-<body>
-    <form action="/deposer" method="POST" enctype="multipart/form-data">
-        <label for="">Titre de l'annonce</label>
-        <input type="text" name="title">
-        <label for="">Texte de l'annonce</label>
-        <input type="text" name="description">
-        <label for="">Prix</label>
-        <input type="text" name="price">
-        <label for="">Photo</label>
-        <input type="file" name="photo">
-        <label for="">Ville ou code postal</label>
-        <input type="text" name="city">
-        <label for="">Pseudo</label>
-        <input type="text" name="username">
-        <label for="">Email</label>
-        <input type="email" name="email">
-        <label for="">Téléphone</label>
-        <input type="text" name="phone_number">
-        <button type="submit">Valider</button>
-    </form> 
+<% include partials/header.ejs %>
+
+    <section class="container">
+
+        <div>
+            <div class="banderole">Votre annonce</div>
+            <form action="/deposer" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="formGroupExampleInput">Titre de l'annonce</label>
+                    <input type="text" class="form-control" name="name">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Texte de l'annonce</label>
+                    <input type="text" class="form-control" name="description">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Prix</label>
+                    <input type="text" class="form-control" name="price">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Photo</label>
+                    <input type="file" class="form-control" name="photo">
+                </div>
+            </form>
+        </div>
+            
+            
+        <div>
+            <div class="banderole">Localisation</div>
+            <form action="/deposer" method="POST">
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Ville ou code postal</label>
+                    <input type="text" class="form-control" name="city">
+                </div>
+            </form>
+        </div>
+
+        <div>
+            <div class="banderole">Vos informations</div>
+            <form action="/deposer" method="POST">
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Pseudo</label>
+                    <input type="text" class="form-control" name="username">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Email</label>
+                    <input type="email" class="form-control" name="Email">
+                </div>
+                <div class="form-group">
+                    <label for="formGroupExampleInput2">Téléphone</label>
+                    <input type="text" class="form-control" name="phone_number">
+                </div>
+                <div class="form-group">
+                    <button type="submit">Valider</button>
+                </div>
+            </form>
+        </div>
+    </section>
 </body>
 </html>

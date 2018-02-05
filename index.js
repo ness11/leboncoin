@@ -1,20 +1,25 @@
 var express = require("express");
-var app = express();
 var bodyParser = require("body-parser");
 var uniqid = require('uniqid');
 var multer = require("multer");
+
+var app = express();
+
 var upload = multer({ dest: "public/uploads/" });
+var _ = require('lodash');
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-// app.post("/upload", upload.single("picture"), function(req, res) {
-//     console.log(req.file);
-//     res.send("File uploaded");
-//   });
 var ads = [];
 
+var ad = {
+    id :uniqid(),
+    title : "chaussettes",
+    photo : "02bc1d80f9b811f63444d943efb11beb"
+}
+ads.push(ad)
 app.get("/", function(req, res) {
     res.render("home.ejs", {
         ads : ads
@@ -49,38 +54,22 @@ app.post("/deposer", upload.single("photo"), function(req, res){
         phone_number : phone_number
     })
     console.log(ads)
-    console.log("ads 1", ads[0]);
-    console.log("ads 2", ads[1])
+
     
     res.redirect("/")
 });
 
 app.get("/annonce/:id", function(req, res) {
-   
-    var id = req.params.id 
-    var keys = ads.indexOf(id)
-    console.log(keys)
-    var title = ads[keys].title
-    var city = ads[keys].city
-    var price = ads[keys].price
-    var photo = ads[keys].photo
+    var id = req.params.id
+    var index = _.findIndex(ads, function(ad) { return ad.id == id });
+
     res.render("annonce.ejs", {
-        ad : ads,
-        title : title,
-        city : city,
-        price : price,
-        photo: photo
+        ad: ads[index],
     });
     
-  });
+});
 
 app.listen(3000, function() {
     console.log("Server has started");
   });
 
-//   <!-- <% for (var i = 0; i < ad.length; i++) {%>
-//     <a href="/annonce/<%=ads[i].id%>"><%=ads[i].title%></a>
-//     <%=ads[i].city%>
-//     <%=ads[i].price%>
-//     <img src="/uploads/<%=ads[i].photo%>" alt="">
-//     <%}%> -->

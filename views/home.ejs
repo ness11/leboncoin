@@ -1,23 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script>
-</head>
-<body>
-    <h1>bonjour</h1>
-    <a href="/deposer">Déposer une annonce</a>
-    <div>
+<% include partials/header.ejs %>
+    
+   
+    <section class="container">
+        <div class="">
+        <a href="/deposer">Déposer une annonce</a>
         <% for (var i = 0; i < ads.length; i++) {%>
-        <a href="/annonce/<%=ads[i].id%>"><%=ads[i].title%></a>
-        <%=ads[i].city%>
-        <%=ads[i].price%>
-        <img src="/uploads/<%=ads[i].photo%>" alt="">
+            <a href="/annonce/<%=ads[i].id%>"><%=ads[i].title%></a>
+            <%=ads[i].city%>
+            <%=ads[i].price%>
+            <img src="/uploads/<%=ads[i].photo%>" alt="">
         <%}%>
-    </div>
+    </section>
+   
 </body>
 </html>

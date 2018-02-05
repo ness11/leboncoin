@@ -1,0 +1,17 @@
+.body{
+    font-family: 'Open Sans', sans-serif;
+}
+.navbar{
+    background-color: #FF6000;
+   
+}
+.logo{
+    width: 140px;
+    height: 40px;
+    margin-right: 40px;
+}
+
+.banderole{
+    background-color: grey;
+    height: 50px;;
+}
