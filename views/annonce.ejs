@@ -7,6 +7,11 @@
         <%=ad.city%>
         <%=ad.price%>
         <img src="/uploads/<%=ad.photo%>" alt="">
+        <form action="/annonce/<%=id%>/delete" method="POST">
+            <button>Supprimer</button>
+        </form>
+        
+        
     </div>
    </section>
     

@@ -32,12 +32,19 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-
 app.get("/", function(req, res) {
-    res.render("home.ejs", {
-        ads : ads
-        
-    });   
+    //Appel a ta BD mongo pour récupérer toutes les annonces
+    Ad.find({}, function(err, ads) {
+        if (!err) {
+          console.log(ads);
+        }
+        res.render("home.ejs", {
+            ads : ads
+            
+        });   
+      });
+    
+    
   });
 
 
@@ -78,6 +85,7 @@ app.post("/deposer", upload.single("photo"), function(req, res){
       
     
     })
+    
 
     ad.save(function(err, obj) {
         if (err) {
@@ -91,10 +99,33 @@ app.post("/deposer", upload.single("photo"), function(req, res){
 
 app.get("/annonce/:id", function(req, res) {
     var id = req.params.id;
-    var ad = _.find(ads, ["id", id]);
-    console.log("ad", ad)
-    res.render("annonce.ejs", {
-        ad: ad,
+    Ad.find({"_id" : id}, function(err, ad) {
+        if (!err) {
+          console.log("article", ad);
+        }
+        res.render("annonce.ejs", {
+            ad : ad[0],
+            id : id
+            
+        });   
+      
+      });
+    
+});
+
+
+app.post("/annonce/:id/delete", function(req, res){
+    var id = req.params.id;
+    Ad.find({"_id" : id}, function(err, ad) {
+        if (!err) {
+          console.log("article", ad);
+        }
+        Ad.deleteOne({"_id" : id}, function(err, ad) {
+                if (!err) {
+                  res.redirect('/') 
+            }
+        })
+             
     });
     
 });
