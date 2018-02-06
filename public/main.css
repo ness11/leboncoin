@@ -1,5 +1,11 @@
-.body{
+body{
     font-family: 'Open Sans', sans-serif;
+}
+.top{
+    margin-top: 40px;
+}
+.top-home{
+    border: solid 2px grey
 }
 .navbar{
     background-color: #FF6000;
@@ -14,4 +20,35 @@
 .banderole{
     background-color: grey;
     height: 50px;;
+}
+.row-home{
+    line-height: 24px;
+    margin-bottom: 40px; 
+}
+.row-home:after{
+    border-bottom: solid 2px;
+
+}
+.photo{
+    height: 140px;
+    width: 200px
+}
+.title{
+    font-size: 16px;
+    font-weight: 600;
+    color: #2E77CC;
+    line-height: 50px;
+
+}
+.price{
+    color: #FF6000;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 30px;
+
+}
+.city{
+    font-size: 13px;
+    line-height: 19px;
+
 }

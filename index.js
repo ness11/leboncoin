@@ -2,8 +2,28 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var uniqid = require('uniqid');
 var multer = require("multer");
-
 var app = express();
+var mongoose = require("mongoose");
+
+
+mongoose.connect("mongodb://localhost:27017/leboncoin");
+
+// 1) Definir le schema - A faire qu'une fois
+var adSchema = new mongoose.Schema({
+  title : String,
+  description : String,
+  city : String,
+  price : Number,
+  photo : String,
+  username : String,
+  email : String,
+  phone_number : Number,
+});
+
+// 2) Definir le model - A faire qu'une fois
+var Ad = mongoose.model("Ad", adSchema);
+
+
 
 var upload = multer({ dest: "public/uploads/" });
 var _ = require('lodash');
@@ -12,14 +32,7 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-var ads = [];
 
-var ad = {
-    id :uniqid(),
-    title : "chaussettes",
-    photo : "02bc1d80f9b811f63444d943efb11beb"
-}
-ads.push(ad)
 app.get("/", function(req, res) {
     res.render("home.ejs", {
         ads : ads
@@ -42,8 +55,7 @@ app.post("/deposer", upload.single("photo"), function(req, res){
     var email = req.body.email
     var phone_number = req.body.phone_number
 
-    ads.push({
-        id :uniqid(),
+    /* ads.push({
         title : title,
         description : description,
         city : city,
@@ -52,19 +64,37 @@ app.post("/deposer", upload.single("photo"), function(req, res){
         username : username,
         email : email,
         phone_number : phone_number
-    })
-    console.log(ads)
+    }) */
 
+    var ad = new Ad({ 
+        title : title,
+        description : description,
+        city : city,
+        price: price,
+        photo : photo,
+        username : username,
+        email : email,
+        phone_number : phone_number
+      
     
+    })
+
+    ad.save(function(err, obj) {
+        if (err) {
+        console.log("something went wrong");
+        } else {
+        console.log("we just saved the new add " + obj.title);
+        }
+    });
     res.redirect("/")
 });
 
 app.get("/annonce/:id", function(req, res) {
-    var id = req.params.id
-    var index = _.findIndex(ads, function(ad) { return ad.id == id });
-
+    var id = req.params.id;
+    var ad = _.find(ads, ["id", id]);
+    console.log("ad", ad)
     res.render("annonce.ejs", {
-        ad: ads[index],
+        ad: ad,
     });
     
 });
@@ -73,3 +103,21 @@ app.listen(3000, function() {
     console.log("Server has started");
   });
 
+ 
+//   .save(function(err, obj) {
+//     if (err) {
+//       console.log("something went wrong");
+//     } else {
+//       console.log("we just saved the new add " + obj.title);
+//     }
+//   });
+
+// title : "chaussettes",
+// description : "je vends ma paire de chaussettes collector année 2016 à pailletes argentées",
+// city : "bondy",
+// price: "15",
+// photo : "chaussettes-pailletees.jpg",
+// username : "francoise",
+// email : "francoise@gmail.com",
+// phone_number : "0123456789"
+  
