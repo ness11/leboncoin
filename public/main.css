@@ -1,6 +1,9 @@
 body{
     font-family: 'Open Sans', sans-serif;
 }
+.container-start{
+    margin: 100px;
+}
 .top{
     margin-top: 40px;
 }
@@ -19,7 +22,7 @@ body{
 
 .banderole{
     background-color: grey;
-    height: 50px;;
+    height: 50px;
 }
 .row-home{
     line-height: 24px;

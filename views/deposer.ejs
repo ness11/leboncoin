@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <% include partials/header.ejs %>
 
-    <section class="container">
+    <section class="container-start">
         <div class="top">
             <div>
                 <div class="banderole">Votre annonce</div>
                 <form action="/deposer" method="POST" enctype="multipart/form-data">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="ad_type" id="exampleRadios1" value="offre">
+                        <label class="form-check-label">
+                          Offres
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="ad_type" id="demandes" value="demande">
+                        <label class="form-check-label">
+                          Demandes
+                        </label>
+                      </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput">Titre de l'annonce</label>
                         <input type="text" class="form-control" name="title">
@@ -16,7 +28,7 @@
                     </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput2">Prix</label>
-                        <input type="text" class="form-control" name="price">
+                        <input type="number" class="form-control" name="price">
                     </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput2">Photo</label>
