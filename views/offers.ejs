@@ -3,8 +3,11 @@
    
     <section class="container">
         <div class="top top-home">
-            <% include partials/nav-offer.ejs %>
-
+            <nav class="nav">
+                <a class="nav-link active" href="/offres">Tous</a>
+                <a class="nav-link" href="/offres/particulier">Particuliers</a>
+                <a class="nav-link" href="/offres/professionnel">Professionnel</a>
+            </nav>
             <div class="row row-home ">
                 <% for (var i = 0; i < ads.length; i++) {%>
                 

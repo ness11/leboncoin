@@ -18,7 +18,7 @@ var adSchema = new mongoose.Schema({
     photo : String,
     username : String,
     email : String,
-    phone_number : Number,
+    phone_number : String,
 });
 
 // 2) Definir le model - A faire qu'une fois
@@ -40,7 +40,7 @@ app.get("/", function(req, res) {
 
 app.get("/offres", function(req, res) {
     //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({"ad_type" : "offre"}, function(err, ads) {
+    Ad.find({"ad_type" : "offres"}, function(err, ads) {
         if (!err) {
          
         
@@ -64,7 +64,7 @@ app.get("/offres", function(req, res) {
 
   app.get("/demandes", function(req, res) {
     //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({"ad_type" : "demande"}, function(err, ads) {
+    Ad.find({"ad_type" : "demandes"}, function(err, ads) {
         if (!err) {
          
         
@@ -75,58 +75,57 @@ app.get("/offres", function(req, res) {
     })
 });
 
-app.get("/offres/particuliers", function(req, res) {
-    //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({"user_type" : "particulier", "ad_type" : "offre"}, function(err, ads) {
-        if (!err) {
-         
-        
-            res.render("particulier-offer.ejs", {
-            ads : ads,
-            });
-        }    
-    })
-});
-app.get("/offres/professionnels", function(req, res) {
-    //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({"user_type" : "pro", "ad_type" : "offre"},  function(err, ads) {
-        if (!err) {
-         
-        
-            res.render("professionnel-offer.ejs", {
-            ads : ads,
-            });
-        }    
-    })
-});
-
-app.get("/demandes/:type", function(req, res) {
+app.get("/offres/:type", function(req, res) {
     var type = req.params.type
-    if (Ad.user_type == "particulier"){
-        Ad.find({"user_type" : "particulier", "ad_type" : "demande"}, function(err, ads) {
+    if (type === "particulier"){
+        Ad.find({"user_type" : "particulier", "ad_type" : "offres"}, function(err, ads) {
             if (!err) {
              
             
-                res.render("particulier-request.ejs", {
+                res.render("offers.ejs", {
                 ads : ads,
                 });
             }    
         })
     }
 
-    if (Ad.user_type == "pro"){
-        Ad.find({"user_type" : "pro", "ad_type" : "demande"}, function(err, ads) {
+    else if (type === "professionnel") {
+        Ad.find({"user_type" : "professionnel", "ad_type" : "offres"}, function(err, ads) {
             if (!err) {
              
             
-                res.render("professionnel-request.ejs", {
+                res.render("offers.ejs", {
                 ads : ads,
                 });
             }    
         })
     }
 })
-    //Appel a ta BD mongo pour récupérer toutes les annonces
+
+app.get("/demandes/:type", function(req, res) {
+    var type = req.params.type
+    if (type === "particulier"){
+        Ad.find({"user_type" : "particulier", "ad_type" : "demandes"}, function(err, ads) {
+            if (!err) {
+                res.render("demandes.ejs", {
+                ads : ads,
+                });
+            }    
+        })
+    }
+
+    else if (type === "professionnel") {
+        Ad.find({"user_type" : "professionnel", "ad_type" : "demandes"}, function(err, ads) {
+            if (!err) {
+             
+            
+                res.render("demandes.ejs", {
+                ads : ads,
+                });
+            }    
+        })
+    }
+})
     
 app.get("/deposer", function(req, res) {
     res.render("deposer.ejs");
@@ -176,8 +175,9 @@ app.post("/deposer", upload.single("photo"), function(req, res){
         } else {
         console.log("we just saved the new add " + obj.title);
         }
+        res.redirect("/"+ ad_type)
     });
-    res.redirect("/")
+    
 });
 
 app.get("/annonce/:id", function(req, res) {
