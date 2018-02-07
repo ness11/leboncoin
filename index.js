@@ -9,10 +9,8 @@ mongoose.connect("mongodb://localhost:27017/leboncoin");
 
 // 1) Definir le schema - A faire qu'une fois
 var adSchema = new mongoose.Schema({
-    ad_type : {
-        type: Boolean,
-        possibleValues: ['offre','demande']
-    },
+    ad_type : String,
+    user_type : String,
     title : String,
     description : String,
     city : String,
@@ -34,40 +32,109 @@ var _ = require('lodash');
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.get("/", function(req, res) {
+    //Appel a ta BD mongo pour récupérer toutes les annonces
+    res.render("home.ejs") 
+});
+
 
 app.get("/offres", function(req, res) {
     //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({}, function(err, ads) {
+    Ad.find({"ad_type" : "offre"}, function(err, ads) {
         if (!err) {
-            console.log(ads);
+         
+        
             res.render("offers.ejs", {
-                ads : ads
+            ads : ads,
             });
-        }
+        }    
+    })
+    // Ad.find({}, function(err, ads) {
+    //     if (!err) {
+    //         console.log(ads);
+    //         res.render("offers.ejs", {
+    //             ads : ads
+    //         });
+    //     }
           
-    });   
+    // });   
 });
 
+             
 
   app.get("/demandes", function(req, res) {
     //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({}, function(err, ads) {
+    Ad.find({"ad_type" : "demande"}, function(err, ads) {
         if (!err) {
-            console.log(ads);
+         
+        
             res.render("demandes.ejs", {
-                ads : ads
+            ads : ads,
             });
-        }
-          
-      }); 
+        }    
+    })
 });
 
+app.get("/offres/particuliers", function(req, res) {
+    //Appel a ta BD mongo pour récupérer toutes les annonces
+    Ad.find({"user_type" : "particulier", "ad_type" : "offre"}, function(err, ads) {
+        if (!err) {
+         
+        
+            res.render("particulier-offer.ejs", {
+            ads : ads,
+            });
+        }    
+    })
+});
+app.get("/offres/professionnels", function(req, res) {
+    //Appel a ta BD mongo pour récupérer toutes les annonces
+    Ad.find({"user_type" : "pro", "ad_type" : "offre"},  function(err, ads) {
+        if (!err) {
+         
+        
+            res.render("professionnel-offer.ejs", {
+            ads : ads,
+            });
+        }    
+    })
+});
+
+app.get("/demandes/:type", function(req, res) {
+    var type = req.params.type
+    if (Ad.user_type == "particulier"){
+        Ad.find({"user_type" : "particulier", "ad_type" : "demande"}, function(err, ads) {
+            if (!err) {
+             
+            
+                res.render("particulier-request.ejs", {
+                ads : ads,
+                });
+            }    
+        })
+    }
+
+    if (Ad.user_type == "pro"){
+        Ad.find({"user_type" : "pro", "ad_type" : "demande"}, function(err, ads) {
+            if (!err) {
+             
+            
+                res.render("professionnel-request.ejs", {
+                ads : ads,
+                });
+            }    
+        })
+    }
+})
+    //Appel a ta BD mongo pour récupérer toutes les annonces
+    
 app.get("/deposer", function(req, res) {
     res.render("deposer.ejs");
   });
 
 app.post("/deposer", upload.single("photo"), function(req, res){ 
     var title = req.body.title;
+    var user_type = req.body.user_type
     var ad_type = req.body.ad_type;
     var description = req.body.description;
     var city = req.body.city;
@@ -90,6 +157,7 @@ app.post("/deposer", upload.single("photo"), function(req, res){
 
     var ad = new Ad({ 
         ad_type : ad_type,
+        user_type : user_type,
         title : title,
         description : description,
         city : city,
@@ -101,7 +169,6 @@ app.post("/deposer", upload.single("photo"), function(req, res){
       
     
     })
-    
 
     ad.save(function(err, obj) {
         if (err) {
@@ -110,7 +177,7 @@ app.post("/deposer", upload.single("photo"), function(req, res){
         console.log("we just saved the new add " + obj.title);
         }
     });
-    res.redirect("/offres")
+    res.redirect("/")
 });
 
 app.get("/annonce/:id", function(req, res) {
@@ -139,7 +206,7 @@ app.post("/annonce/:id/delete", function(req, res){
         }
         Ad.deleteOne({"_id" : id}, function(err, ad) {
                 if (!err) {
-                  res.redirect('/offres') 
+                  res.redirect('/') 
             }
         })
              
@@ -164,6 +231,8 @@ app.get("/annonce/:id/edit", function(req, res) {
 });
 
 app.post("/annonce/:id/edit", upload.single("photo"), function(req, res) {
+    var user_type = req.body.user_type
+    var ad_type = req.body.ad_type;
     var title = req.body.title
     var description = req.body.description
     var city = req.body.city
@@ -183,6 +252,8 @@ app.post("/annonce/:id/edit", upload.single("photo"), function(req, res) {
         username : username,
         email : email,
         phone_number : phone_number,
+        ad_type : ad_type,
+        user_type : user_type,
         }, 
         {new: true}, 
         function(err, ad) {

@@ -7,15 +7,27 @@
                 <div class="banderole">Votre annonce</div>
                 <form action="/deposer" method="POST" enctype="multipart/form-data">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="ad_type" id="exampleRadios1" value="offre">
-                        <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="ad_type" value="offre">
+                        <label class="form-check-label" >
                           Offres
                         </label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="ad_type" id="demandes" value="demande">
-                        <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="ad_type" value="demande">
+                        <label class="form-check-label" >
                           Demandes
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="user_type" value="particulier">
+                        <label class="form-check-label" for="particulier" name="user_type">
+                          Particulier
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="user_type" value="pro">
+                        <label class="form-check-label" for="pro" name="user_type">
+                          Professionnel
                         </label>
                       </div>
                     <div class="form-group">
