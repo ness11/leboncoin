@@ -9,25 +9,25 @@
                 <div class="banderole">Votre annonce</div>
                 <form action="/annonce/<%=id%>/edit" method="POST" enctype="multipart/form-data">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="ad_type" value="offres">
-                        <label class="form-check-label" >
+                        <input class="form-check-input" type="radio" name="ad_type" value="offres" <%= ad.ad_type == "offres" ? " checked" : "" %>>
+                        <label class="form-check-label">
                           Offres
                         </label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="ad_type" value="demandes">
+                        <input class="form-check-input" type="radio" name="ad_type" value="demandes" <%= ad.ad_type == "demandes" ? " checked" : "" %>> >
                         <label class="form-check-label">
                           Demandes
                         </label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="user_type" value="particulier">
+                        <input class="form-check-input" type="radio" name="user_type" value="particulier" <%= ad.user_type == "particulier" ? " checked" : "" %>>
                         <label class="form-check-label" >
                           Particulier
                         </label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="user_type" value="professionnel">
+                        <input class="form-check-input" type="radio" name="user_type" value="professionnel" <%= ad.user_type == "professionnel" ? " checked" : "" %>>
                         <label class="form-check-label">
                           Professionnel
                         </label>

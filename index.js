@@ -28,7 +28,7 @@ passport.serializeUser(User.serializeUser()); // JSON.stringify
 passport.deserializeUser(User.deserializeUser()); // JSON.parse
 
 /* VARIABLES CONSTANTES */
-var limit = 1;
+var limit = 5;
 
 // 1) Definir le schema - A faire qu'une fois
 var adSchema = new mongoose.Schema({
@@ -55,7 +55,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 function checkUser(req, res, next) {
     if (!req.user) {
-      res.redirect('/register');
+      res.redirect('/login');
     } else {
       next();    
     }
@@ -66,12 +66,12 @@ function checkUser(req, res, next) {
 app.get("/", function(req, res) {
     var page = req.query.page
     Ad.count({}, function(err, count) {
-        
+
         Ad.find({}, function(err, ads) {
             if (!err) {
                 res.render("home.ejs", {
                 ads : ads,
-                count: count
+                count: Math.ceil(count/limit)
                 });
             }    
         }).limit(limit)
@@ -80,12 +80,24 @@ app.get("/", function(req, res) {
     }) 
 });
 app.get('/account', function(req, res) {
+    var page = req.query.page
+
     if (req.isAuthenticated()) {
-      console.log();
-      res.render('account', {
-        user : req.user.username
-       
-      });
+        Ad.count({"id_user" : req.user.id}, function(err, count) {
+            Ad.find({"id_user" : req.user.id}, function(err, ads) {
+                console.log(ads)
+                if (!err) {
+                    res.render('account', {
+                        user : req.user.username,
+                        ads : ads,
+                        count : Math.ceil(count/limit)
+                      });
+                }    
+            }).limit(limit)
+            .skip(page * limit - limit);
+            
+        })
+      
     } else {
       res.redirect('/');
     }
@@ -149,7 +161,7 @@ app.get("/offres", function(req, res) {
             if (!err) {
                 res.render("offers.ejs", {
                 ads : ads,
-                count: count
+                count: Math.ceil(count/limit)
                 });
             }    
         }).limit(limit)
@@ -170,7 +182,7 @@ app.get("/offres", function(req, res) {
             if (!err) {
                 res.render("demandes.ejs", {
                 ads : ads,
-                count: count
+                count: Math.ceil(count/limit)
                 });
             }    
         }).limit(limit)
@@ -190,7 +202,7 @@ app.get("/offres/:type", function(req, res) {
                 
                     res.render("offers.ejs", {
                     ads : ads,
-                    count : count
+                    count : Math.ceil(count/limit)
                     });
                 }    
             }).limit(limit)
@@ -205,7 +217,7 @@ app.get("/offres/:type", function(req, res) {
             
                 res.render("offers.ejs", {
                 ads : ads,
-                count : count
+                count : Math.ceil(count/limit)
                 });
             }    
         }).limit(limit)
@@ -225,7 +237,7 @@ app.get("/demandes/:type", function(req, res) {
                 
                     res.render("demandes.ejs", {
                     ads : ads,
-                    count : count
+                    count : Math.ceil(count/limit)
                     });
                 }    
             }).limit(limit)
@@ -240,7 +252,7 @@ app.get("/demandes/:type", function(req, res) {
             
                 res.render("demandes.ejs", {
                 ads : ads,
-                count : count
+                count : Math.ceil(count/limit)
                 });
             }    
         }).limit(limit)
@@ -297,25 +309,42 @@ app.post("/deposer", upload.single("photo"), function(req, res){
     
 });
 
-app.get("/annonce/:id", function(req, res) {
+app.get("/annonce/:id", function(req, res, user) {
     var id = req.params.id;
+    console.log(req.isAuthenticated())
+    if (!req.isAuthenticated()){
     Ad.find({"_id" : id}, function(err, ad) {
         if (!err) {
-          console.log("article", ad);
-        
+            console.log("article", ad);
             res.render("annonce.ejs", {
             ad : ad[0],
             id : id,
+            auth : req.isAuthenticated()
             });
-        }    
-           
-      
+        }     
       });
-    
+    } 
+    else {
+        var username = req.user.id
+        Ad.find({"_id" : id}, function(err, ad) {
+            if (!err) {
+              console.log("article", ad);
+            
+                res.render("annonce.ejs", {
+                ad : ad[0],
+                id : id,
+                user : username,
+                auth : req.isAuthenticated()
+                });
+            }    
+               
+          
+          });
+    }
 });
 
 
-app.post("/annonce/:id/delete", function(req, res){
+app.post("/annonce/:id/delete", checkUser, function(req, res){
     var id = req.params.id;
     Ad.find({"_id" : id}, function(err, ad) {
         if (!err) {
@@ -330,21 +359,27 @@ app.post("/annonce/:id/delete", function(req, res){
     });
     
 });
-app.get("/annonce/:id/edit", function(req, res) {
-    //Appel a ta BD mongo pour récupérer toutes les annonces
+app.get("/annonce/:id/edit", checkUser, function(req, res) {
     var id = req.params.id;
-    Ad.find({"_id" : id}, function(err, ad) {
+    //Appel a ta BD mongo pour récupérer toutes les annonces
+    
+        Ad.find({"_id" : id}, function(err, ad) {
+            // if (ad[0].id_user === req.user.id){
         if (!err) {
-            console.log("3ieme", ad);
+            
             res.render("edit.ejs", {
             ad : ad[0],
-            id : id
+            id : id,
+            user : req.user.id
             }); 
-        }
-        
-            
-          
-    });
+            }   
+        //     } else {
+        //     res.send("ce n'est pas votre compte")
+    
+        // }          
+    })
+    
+   
 });
 
 app.post("/annonce/:id/edit", upload.single("photo"), function(req, res) {
@@ -383,7 +418,7 @@ app.post("/annonce/:id/edit", upload.single("photo"), function(req, res) {
     
 });
 
-app.get("/annonce/:id/modified", function(req, res) {
+app.get("/annonce/:id/modified", checkUser, function(req, res) {
     var id = req.params.id;
     Ad.find({"_id" : id}, function(err, ad) {
         if (!err) {
