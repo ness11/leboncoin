@@ -1,0 +1,11 @@
+<% include partials/header.ejs %>
+
+<div class="container">
+
+    <form action='/login' method='POST'>
+        <input type='text' placeholder='Username' name='username'/>
+        <input type='password' placeholder='Password' name='password'/>
+        <button type='submit'>Submit</button>
+    </form>
+    <a href="http://localhost:3000/register">Vous n'avez pas de compte? Cliquez ici!</a>
+</div>

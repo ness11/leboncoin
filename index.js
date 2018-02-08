@@ -4,8 +4,28 @@ var uniqid = require('uniqid');
 var multer = require("multer");
 var app = express();
 var mongoose = require("mongoose");
+var expressSession = require('express-session');
+var MongoStore = require('connect-mongo')(expressSession);
+var passport = require('passport');
+var bodyParser = require('body-parser');
+var LocalStrategy = require('passport-local')
+var User = require('./models/user');
 
 mongoose.connect("mongodb://localhost:27017/leboncoin");
+app.set('view engine', 'ejs');
+app.use(expressSession({
+    secret: 'thereactor09',
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({mongooseConnection: mongoose.connection})
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser()); // JSON.stringify
+passport.deserializeUser(User.deserializeUser()); // JSON.parse
 
 /* VARIABLES CONSTANTES */
 var limit = 1;
@@ -36,10 +56,78 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", function(req, res) {
-    //Appel a ta BD mongo pour récupérer toutes les annonces
-    res.render("home.ejs") 
+    var page = req.query.page
+    Ad.count({}, function(err, count) {
+        
+        Ad.find({}, function(err, ads) {
+            if (!err) {
+                res.render("home.ejs", {
+                ads : ads,
+                count: count
+                });
+            }    
+        }).limit(limit)
+        .skip(page * limit - limit);
+        
+    }) 
 });
-
+app.get('/secret', function(req, res) {
+    if (req.isAuthenticated()) {
+      console.log(req.user);
+      res.render('secret');
+    } else {
+      res.redirect('/');
+    }
+  });
+  
+  app.get('/register', function(req, res) {
+    if (req.isAuthenticated()) {
+      res.redirect('/secret');
+    } else {
+      res.render('register');
+    }
+  });
+  
+  app.post('/register', function(req, res) {
+    // Créer un utilisateur, en utilisant le model defini
+    // Nous aurons besoin de `req.body.username` et `req.body.password`
+    User.register(
+      new User({
+        username: req.body.username,
+        // D'autres champs peuvent être ajoutés ici
+      }),
+      req.body.password, // password will be hashed
+      function(err, user) {
+        if (err) {
+          console.log(err);
+          return res.render('register');
+        } else {
+          passport.authenticate('local')(req, res, function() {
+            res.redirect('/secret');
+          });
+        }
+      }
+    );
+  });
+  
+  app.get('/login', function(req, res) {
+    if (req.isAuthenticated()) {
+      res.redirect('/secret');
+    } else {
+      res.render('login');
+    }
+  });
+  
+  app.post('/login', passport.authenticate('local', {
+    successRedirect: '/secret',
+    failureRedirect: '/login'
+  }));
+  
+  app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect('/');
+  });
+  
 app.get("/offres", function(req, res) {
     //Appel a ta BD mongo pour récupérer toutes les annonces
     var page = req.query.page
@@ -114,20 +202,7 @@ app.get("/offres/:type", function(req, res) {
     })
     }
 })
-// Ad.count({"ad_type" : "demandes"}, function(err, count) {
-//     console.log(count)
-    
-//     Ad.find({"ad_type" : "demandes"}, function(err, ads) {
-//         if (!err) {
-//             res.render("demandes.ejs", {
-//             ads : ads,
-//             count: count
-//             });
-//         }    
-//     }).limit(limit)
-//     .skip(page * limit - limit);
-    
-// })
+
 app.get("/demandes/:type", function(req, res) {
     var type = req.params.type
     var page = req.query.page
@@ -179,16 +254,6 @@ app.post("/deposer", upload.single("photo"), function(req, res){
     var email = req.body.email;
     var phone_number = req.body.phone_number;
     console.log(ad_type)
-    /* ads.push({
-        title : title,
-        description : description,
-        city : city,
-        price : price,
-        photo : photo,
-        username : username,
-        email : email,
-        phone_number : phone_number
-    }) */
 
     var ad = new Ad({ 
         ad_type : ad_type,
@@ -321,21 +386,5 @@ app.listen(3000, function() {
     console.log("Server has started");
   });
 
- 
-//   .save(function(err, obj) {
-//     if (err) {
-//       console.log("something went wrong");
-//     } else {
-//       console.log("we just saved the new add " + obj.title);
-//     }
-//   });
 
-// title : "chaussettes",
-// description : "je vends ma paire de chaussettes collector année 2016 à pailletes argentées",
-// city : "bondy",
-// price: "15",
-// photo : "chaussettes-pailletees.jpg",
-// username : "francoise",
-// email : "francoise@gmail.com",
-// phone_number : "0123456789"
   
