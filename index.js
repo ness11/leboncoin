@@ -7,6 +7,9 @@ var mongoose = require("mongoose");
 
 mongoose.connect("mongodb://localhost:27017/leboncoin");
 
+/* VARIABLES CONSTANTES */
+var limit = 1;
+
 // 1) Definir le schema - A faire qu'une fois
 var adSchema = new mongoose.Schema({
     ad_type : String,
@@ -37,93 +40,126 @@ app.get("/", function(req, res) {
     res.render("home.ejs") 
 });
 
-
 app.get("/offres", function(req, res) {
     //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({"ad_type" : "offres"}, function(err, ads) {
-        if (!err) {
-         
+    var page = req.query.page
+    console.log(page)
+    Ad.count({"ad_type" : "offres"}, function(err, count) {
         
-            res.render("offers.ejs", {
-            ads : ads,
-            });
-        }    
+        Ad.find({"ad_type" : "offres"}, function(err, ads) {
+            if (!err) {
+                res.render("offers.ejs", {
+                ads : ads,
+                count: count
+                });
+            }    
+        }).limit(limit)
+        .skip(page * limit - limit);
+        
     })
-    // Ad.find({}, function(err, ads) {
-    //     if (!err) {
-    //         console.log(ads);
-    //         res.render("offers.ejs", {
-    //             ads : ads
-    //         });
-    //     }
-          
-    // });   
+    
 });
 
              
 
   app.get("/demandes", function(req, res) {
+    var page = req.query.page
     //Appel a ta BD mongo pour récupérer toutes les annonces
-    Ad.find({"ad_type" : "demandes"}, function(err, ads) {
-        if (!err) {
-         
+    Ad.count({"ad_type" : "demandes"}, function(err, count) {
         
-            res.render("demandes.ejs", {
-            ads : ads,
-            });
-        }    
+        Ad.find({"ad_type" : "demandes"}, function(err, ads) {
+            if (!err) {
+                res.render("demandes.ejs", {
+                ads : ads,
+                count: count
+                });
+            }    
+        }).limit(limit)
+        .skip(page * limit - limit);
+        
     })
 });
 
 app.get("/offres/:type", function(req, res) {
     var type = req.params.type
-    if (type === "particulier"){
-        Ad.find({"user_type" : "particulier", "ad_type" : "offres"}, function(err, ads) {
-            if (!err) {
-             
-            
-                res.render("offers.ejs", {
-                ads : ads,
-                });
-            }    
+    var page = req.query.page
+        if (type === "particulier"){
+            Ad.count({"ad_type" : "offres", "user_type" : "particulier"}, function(err, count) {
+            Ad.find({"user_type" : "particulier", "ad_type" : "offres"}, function(err, ads) {
+                if (!err) {
+                
+                
+                    res.render("offers.ejs", {
+                    ads : ads,
+                    count : count
+                    });
+                }    
+            }).limit(limit)
+            .skip(page * limit - limit);
         })
-    }
-
-    else if (type === "professionnel") {
+        } else if(type === "professionnel") {
+            Ad.count({"ad_type" : "offres", "user_type" : "professionnel"}, function(err, count) {
+             
         Ad.find({"user_type" : "professionnel", "ad_type" : "offres"}, function(err, ads) {
             if (!err) {
              
             
                 res.render("offers.ejs", {
                 ads : ads,
+                count : count
                 });
             }    
-        })
+        }).limit(limit)
+        .skip(page * limit - limit);
+    })
     }
 })
-
+// Ad.count({"ad_type" : "demandes"}, function(err, count) {
+//     console.log(count)
+    
+//     Ad.find({"ad_type" : "demandes"}, function(err, ads) {
+//         if (!err) {
+//             res.render("demandes.ejs", {
+//             ads : ads,
+//             count: count
+//             });
+//         }    
+//     }).limit(limit)
+//     .skip(page * limit - limit);
+    
+// })
 app.get("/demandes/:type", function(req, res) {
     var type = req.params.type
-    if (type === "particulier"){
-        Ad.find({"user_type" : "particulier", "ad_type" : "demandes"}, function(err, ads) {
-            if (!err) {
-                res.render("demandes.ejs", {
-                ads : ads,
-                });
-            }    
+    var page = req.query.page
+        if (type === "particulier"){
+            Ad.count({"ad_type" : "demandes", "user_type" : "particulier"}, function(err, count) {
+            Ad.find({"user_type" : "particulier", "ad_type" : "demandes"}, function(err, ads) {
+                if (!err) {
+                
+                
+                    res.render("demandes.ejs", {
+                    ads : ads,
+                    count : count
+                    });
+                }    
+            }).limit(limit)
+            .skip(page * limit - limit);
         })
-    }
-
-    else if (type === "professionnel") {
+        } else if(type === "professionnel") {
+            Ad.count({"ad_type" : "demandes", "user_type" : "professionnel"}, function(err, count) {
+             
         Ad.find({"user_type" : "professionnel", "ad_type" : "demandes"}, function(err, ads) {
             if (!err) {
              
             
                 res.render("demandes.ejs", {
                 ads : ads,
+                count : count
                 });
             }    
-        })
+        }).limit(limit)
+        .skip(page * limit - limit);
+    })
     }
 })
     
@@ -164,7 +200,7 @@ app.post("/deposer", upload.single("photo"), function(req, res){
         photo : photo,
         username : username,
         email : email,
-        phone_number : phone_number
+        phone_number : phone_number,
       
     
     })

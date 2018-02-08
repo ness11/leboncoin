@@ -23,8 +23,13 @@
                 <%}%>
             </div>
             <a href="/deposer">Déposer une annonce</a>
-            
-            
+            <ul>
+            <% for (var i = 1; i <= count; i++) { %>
+                
+                
+              <a href="?page=<%=i%>"><li><%=i%></li></a>   
+            <%}%>
+            </ul>
             
         </div>   
     </section>

@@ -1,15 +1,15 @@
 body{
     font-family: 'Open Sans', sans-serif;
+    background-color: #F2F2F2;
+
 }
 .container-start{
     margin: 100px;
+    background-color: white;
 }
-.top{
-    margin-top: 40px;
-}
-.top-home{
-    border: solid 2px grey
-}
+
+
+
 .navbar{
     background-color: #FF6000;
    
@@ -19,11 +19,11 @@ body{
     height: 40px;
     margin-right: 40px;
 }
-
-.banderole{
-    background-color: grey;
-    height: 50px;
+/* offer/request */
+.top-home{
+    border: solid 2px grey
 }
+
 .row-home{
     line-height: 24px;
     margin-bottom: 40px; 
@@ -54,4 +54,37 @@ body{
     font-size: 13px;
     line-height: 19px;
 
+}
+/* deposer une annonce */
+
+.banderole{
+    background-color: grey;
+    height: 50px;
+}
+/* annonce */
+.article{
+    margin: 0 200px;
+    background-color: white
+}
+h2{
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.picture-an{
+    width: 665px;
+
+}
+.picture-an-div{
+    margin-bottom: 20px
+}
+.picture-an-div::after{
+    border-bottom: solid 2px black
+}
+.top{
+    margin-top: 40px;
+    width: 700px;
+}
+.title-img::after{
+    border-bottom: solid 2px black
 }
