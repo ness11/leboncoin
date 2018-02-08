@@ -42,18 +42,26 @@ var adSchema = new mongoose.Schema({
     username : String,
     email : String,
     phone_number : String,
+    id_user : String,
 });
 
 // 2) Definir le model - A faire qu'une fois
 var Ad = mongoose.model("Ad", adSchema);
-
-
-
 var upload = multer({ dest: "public/uploads/" });
 var _ = require('lodash');
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
+
+function checkUser(req, res, next) {
+    if (!req.user) {
+      res.redirect('/register');
+    } else {
+      next();    
+    }
+  }
+  
+  
 
 app.get("/", function(req, res) {
     var page = req.query.page
@@ -71,10 +79,13 @@ app.get("/", function(req, res) {
         
     }) 
 });
-app.get('/secret', function(req, res) {
+app.get('/account', function(req, res) {
     if (req.isAuthenticated()) {
-      console.log(req.user);
-      res.render('secret');
+      console.log();
+      res.render('account', {
+        user : req.user.username
+       
+      });
     } else {
       res.redirect('/');
     }
@@ -82,7 +93,7 @@ app.get('/secret', function(req, res) {
   
   app.get('/register', function(req, res) {
     if (req.isAuthenticated()) {
-      res.redirect('/secret');
+      res.redirect('/account');
     } else {
       res.render('register');
     }
@@ -103,7 +114,7 @@ app.get('/secret', function(req, res) {
           return res.render('register');
         } else {
           passport.authenticate('local')(req, res, function() {
-            res.redirect('/secret');
+            res.redirect('/account');
           });
         }
       }
@@ -112,14 +123,14 @@ app.get('/secret', function(req, res) {
   
   app.get('/login', function(req, res) {
     if (req.isAuthenticated()) {
-      res.redirect('/secret');
+      res.redirect('/account');
     } else {
       res.render('login');
     }
   });
   
   app.post('/login', passport.authenticate('local', {
-    successRedirect: '/secret',
+    successRedirect: '/account',
     failureRedirect: '/login'
   }));
   
@@ -238,9 +249,14 @@ app.get("/demandes/:type", function(req, res) {
     }
 })
     
-app.get("/deposer", function(req, res) {
-    res.render("deposer.ejs");
-  });
+// app.get("/deposer", function(req, res) {
+//     res.render("deposer.ejs");
+//   });
+app.get('/deposer', checkUser, function(req, res) {
+    res.render('deposer.ejs', {
+        username : req.user.username,
+    });
+});
 
 app.post("/deposer", upload.single("photo"), function(req, res){ 
     var title = req.body.title;
@@ -250,11 +266,11 @@ app.post("/deposer", upload.single("photo"), function(req, res){
     var city = req.body.city;
     var price = req.body.price;
     var photo = req.file.filename;
-    var username = req.body.username;
+    var username = req.user.username;
     var email = req.body.email;
     var phone_number = req.body.phone_number;
     console.log(ad_type)
-
+    console.log(req.user.id)
     var ad = new Ad({ 
         ad_type : ad_type,
         user_type : user_type,
@@ -266,7 +282,7 @@ app.post("/deposer", upload.single("photo"), function(req, res){
         username : username,
         email : email,
         phone_number : phone_number,
-      
+        id_user: req.user.id
     
     })
 
