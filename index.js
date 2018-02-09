@@ -59,7 +59,7 @@ function checkUser(req, res, next) {
     } else {
       next();    
     }
-  }
+}
   
   
 
@@ -79,6 +79,7 @@ app.get("/", function(req, res) {
         
     }) 
 });
+
 app.get('/account', function(req, res) {
     var page = req.query.page
 
@@ -91,49 +92,50 @@ app.get('/account', function(req, res) {
                         user : req.user.username,
                         ads : ads,
                         count : Math.ceil(count/limit)
-                      });
+                    });
                 }    
-            }).limit(limit)
+            })
+            .limit(limit)
             .skip(page * limit - limit);
             
         })
       
     } else {
-      res.redirect('/');
+        res.redirect('/');
     }
-  });
+});
   
-  app.get('/register', function(req, res) {
+app.get('/register', function(req, res) {
     if (req.isAuthenticated()) {
-      res.redirect('/account');
+        res.redirect('/account');
     } else {
-      res.render('register');
+        res.render('register');
     }
-  });
+});
   
-  app.post('/register', function(req, res) {
+app.post('/register', function(req, res) {
     // Créer un utilisateur, en utilisant le model defini
     // Nous aurons besoin de `req.body.username` et `req.body.password`
     User.register(
-      new User({
-        username: req.body.username,
+        new User({
+            username: req.body.username,
         // D'autres champs peuvent être ajoutés ici
-      }),
-      req.body.password, // password will be hashed
-      function(err, user) {
-        if (err) {
-          console.log(err);
-          return res.render('register');
-        } else {
-          passport.authenticate('local')(req, res, function() {
-            res.redirect('/account');
-          });
+        }),
+        req.body.password, // password will be hashed
+        function(err, user) {
+            if (err) {
+                console.log(err);
+            return res.render('register');
+            } else {
+                passport.authenticate('local')(req, res, function() {
+                res.redirect('/account');
+                });
+            }
         }
-      }
-    );
-  });
+        );
+});
   
-  app.get('/login', function(req, res) {
+app.get('/login', function(req, res) {
     if (req.isAuthenticated()) {
       res.redirect('/account');
     } else {
@@ -433,7 +435,7 @@ app.get("/annonce/:id/modified", checkUser, function(req, res) {
     });
 });
 
-app.listen(3000, function() {
+app.listen(process.env.PORT || 3000, function() {
     console.log("Server has started");
   });
 
